@@ -1,0 +1,33 @@
+---
+title: "Initial Lyric Datafram"
+author: "Dave Gruenewald"
+date: "February 26, 2018"
+output: html_document
+---
+
+## Pick a song with rich lyrics
+```{r}
+library(tidyverse)
+# devtools::install_github("josiahparry/geniusR")
+library(geniusR)
+
+
+raw_df <- geniusR::genius_lyrics(artist = "Pink Floyd",
+                                 song = "Comfortably Numb",
+                                 info = "all")
+```
+
+## Remove special characters
+
+```{r}
+parsed_df <- raw_df %>% 
+  filter(!(text %in% c("Roger Waters", "David Gilmour"))) %>% 
+  mutate(text = str_replace_all(tolower(text), "[[:punct:]]", ""),
+         line = row_number(),
+         line_length = str_length(text)) %>% 
+  separate_rows(text, sep = " ") %>% 
+  mutate(text_length = str_length(text),
+         word = row_number())
+
+```
+
