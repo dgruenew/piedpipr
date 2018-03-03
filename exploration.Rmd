@@ -1,21 +1,29 @@
 ---
-title: "Initial Lyric Datafram"
+title: "Initial Lyric Dataframe"
 author: "Dave Gruenewald"
 date: "February 26, 2018"
 output: html_document
+  toc: true
 ---
 
 ## Pick a song with rich lyrics
+
+I've been digging some Pink Floyd lately, so let's try "Comfortably Numb".
+
 ```{r}
 library(tidyverse)
 # devtools::install_github("josiahparry/geniusR")
 library(geniusR)
 
+song <- "Comfortably Numb"
 
 raw_df <- geniusR::genius_lyrics(artist = "Pink Floyd",
-                                 song = "Comfortably Numb",
+                                 song = song,
                                  info = "all")
 ```
+
+Looks like there are a few special characters, so I'll need to clean that up a little bit.  
+
 
 ## Remove special characters
 
@@ -28,6 +36,31 @@ parsed_df <- raw_df %>%
   separate_rows(text, sep = " ") %>% 
   mutate(text_length = str_length(text),
          word = row_number())
+
+```
+
+There we go, I removed punctuation, all text is now lower case, and each word is its own line.  `r nrow(parsed_df)` words for "`r song`".  Now time to plot redundancies
+
+```{r}
+parsed_df %>% 
+  left_join(.,
+            parsed_df %>% 
+              group_by(text) %>% 
+              tally(),
+            by = "text")
+
+# tmp <- diag(1, nrow(parsed_df) %>% 
+#               rep(., 2))
+# 
+# colnames(tmp) <- parsed_df %>% pull(text)
+# rownames(tmp) <- parsed_df %>% pull(text)
+
+as_data_frame(tmp)
+
+parsed_df %>% 
+  pull(text)
+
+plot(tmp)
 
 ```
 
