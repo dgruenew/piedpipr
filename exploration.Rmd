@@ -2,8 +2,9 @@
 title: "Initial Lyric Dataframe"
 author: "Dave Gruenewald"
 date: "February 26, 2018"
-output: html_document
-  toc: true
+output: 
+  html_document:
+    toc: true
 ---
 
 ## Pick a song with rich lyrics
@@ -15,9 +16,9 @@ library(tidyverse)
 # devtools::install_github("josiahparry/geniusR")
 library(geniusR)
 
-song <- "Comfortably Numb"
+song <- "Nights in White Satin"
 
-raw_df <- geniusR::genius_lyrics(artist = "Pink Floyd",
+raw_df <- geniusR::genius_lyrics(artist = "Moody Blues",
                                  song = song,
                                  info = "all")
 ```
@@ -39,28 +40,33 @@ parsed_df <- raw_df %>%
 
 ```
 
-There we go, I removed punctuation, all text is now lower case, and each word is its own line.  `r nrow(parsed_df)` words for "`r song`".  Now time to plot redundancies
+There we go, I removed punctuation, all text is now lower case, and each word is its own line.  `r nrow(parsed_df)` words for "`r song`".  Now time to plot redundancies.
+
+But first maybe look at ratio of total words vs. unique words
 
 ```{r}
-parsed_df %>% 
+rep_df <- parsed_df %>% 
   left_join(.,
             parsed_df %>% 
               group_by(text) %>% 
               tally(),
             by = "text")
 
+parsed_df %>% 
+  distinct(text)
+
 # tmp <- diag(1, nrow(parsed_df) %>% 
 #               rep(., 2))
 # 
 # colnames(tmp) <- parsed_df %>% pull(text)
 # rownames(tmp) <- parsed_df %>% pull(text)
-
-as_data_frame(tmp)
-
-parsed_df %>% 
-  pull(text)
-
-plot(tmp)
+# 
+# as_data_frame(tmp)
+# 
+# parsed_df %>% 
+#   pull(text)
+# 
+# plot(tmp)
 
 ```
 
