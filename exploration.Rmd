@@ -30,8 +30,11 @@ Looks like there are a few special characters, so I'll need to clean that up a l
 
 ```{r}
 parsed_df <- raw_df %>% 
-  filter(!(text %in% c("Roger Waters", "David Gilmour"))) %>% 
-  mutate(text = str_replace_all(tolower(text), "[[:punct:]]", ""),
+  # filter(!(text %in% c("Roger Waters", "David Gilmour"))) %>% 
+  mutate(text = lyric %>% 
+           str_to_lower() %>% 
+           str_replace_all("[[:punct:]]", "") %>% 
+           str_trim(),
          line = row_number(),
          line_length = str_length(text)) %>% 
   separate_rows(text, sep = " ") %>% 
